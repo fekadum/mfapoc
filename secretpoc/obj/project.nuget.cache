@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "qzfqgn5i9l0=",
+  "dgSpecHash": "iz8DAcz0mAg=",
   "success": true,
   "projectFilePath": "D:\\Personal\\projects\\Learning\\secretpoc\\secretpoc\\secretpoc.csproj",
   "expectedPackageFiles": [
@@ -136,6 +136,7 @@
     "C:\\Users\\Fikadub\\.nuget\\packages\\nuget.projectmodel\\6.11.0\\nuget.projectmodel.6.11.0.nupkg.sha512",
     "C:\\Users\\Fikadub\\.nuget\\packages\\nuget.protocol\\6.11.0\\nuget.protocol.6.11.0.nupkg.sha512",
     "C:\\Users\\Fikadub\\.nuget\\packages\\nuget.versioning\\6.11.0\\nuget.versioning.6.11.0.nupkg.sha512",
+    "C:\\Users\\Fikadub\\.nuget\\packages\\otp.net\\1.4.0\\otp.net.1.4.0.nupkg.sha512",
     "C:\\Users\\Fikadub\\.nuget\\packages\\sqlitepclraw.bundle_e_sqlite3\\2.1.6\\sqlitepclraw.bundle_e_sqlite3.2.1.6.nupkg.sha512",
     "C:\\Users\\Fikadub\\.nuget\\packages\\sqlitepclraw.core\\2.1.6\\sqlitepclraw.core.2.1.6.nupkg.sha512",
     "C:\\Users\\Fikadub\\.nuget\\packages\\sqlitepclraw.lib.e_sqlite3\\2.1.6\\sqlitepclraw.lib.e_sqlite3.2.1.6.nupkg.sha512",

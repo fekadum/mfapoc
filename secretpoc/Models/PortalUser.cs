@@ -10,6 +10,8 @@
         public string Username { get; set; } = string.Empty;
         public string Phone { get; set; }
         public string EmailAddress { get; set; } = string.Empty;
+        public string AuthenticatorKey { get; set; } = string.Empty;
+
     }
     public class PortalUserBalance : Generic
     {
@@ -26,5 +28,10 @@
         public DateTime RevisedTime { get; set; }
         public string CreatedBy { get; set; } = string.Empty;
         public string RevisedBy { get; set; } = string.Empty;
+    }
+    public class TOTPVerificationViewModel
+    {
+        public string ActionKey { get; set; }
+        public string AuthenticatorCode { get; set; }
     }
 }

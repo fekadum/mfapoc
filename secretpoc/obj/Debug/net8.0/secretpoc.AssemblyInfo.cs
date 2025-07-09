@@ -16,7 +16,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("secretpoc")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+b13021018c75298860872132d550e9fb312698a8")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+ca7385d3eb05ee00c1a71cace6775f2c9b655ffe")]
 [assembly: System.Reflection.AssemblyProductAttribute("secretpoc")]
 [assembly: System.Reflection.AssemblyTitleAttribute("secretpoc")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
