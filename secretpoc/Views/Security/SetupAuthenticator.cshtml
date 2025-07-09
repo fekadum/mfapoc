@@ -1,0 +1,23 @@
+﻿@model secretpoc.Models.SetupAuthenticatorViewModel
+
+<h2>Set up your Authenticator App</h2>
+
+<p>Scan the QR code below with Google Authenticator or another TOTP app:</p>
+<img src="https://chart.googleapis.com/chart?chs=200x200&cht=qr&chl=@Model.QrCodeUrl" alt="QR Code" />
+
+<p>If needed, enter this code manually:</p>
+<code>@Model.SecretKey</code>
+
+<form asp-action="SetupAuthenticator" method="post">
+    <div class="form-group">
+        <label>Enter the 6-digit code from your app</label>
+        <input asp-for="Code" class="form-control" />
+        <span asp-validation-for="Code" class="text-danger"></span>
+    </div>
+    <button type="submit" class="btn btn-primary">Verify & Enable</button>
+</form>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script type="text/javascript" src="~/js/qrcode.min.js"></script>
+    <script type="text/javascript" src="~/js/qr.js"></script>
+}

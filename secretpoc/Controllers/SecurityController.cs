@@ -3,56 +3,104 @@ using OtpNet;
 using secretpoc.Data;
 using secretpoc.Models;
 
-public class SecurityController : Controller
+namespace secretpoc.Controllers
 {
-    private readonly ApplicationDbContext _db;
-
-    public SecurityController(ApplicationDbContext db)
+    public class SecurityController : Controller
     {
-        _db = db;
-    }
+        private readonly ApplicationDbContext _db;
 
-    [HttpGet]
-    public IActionResult VerifyAuthenticator(string actionKey)
-    {
-        var model = new TOTPVerificationViewModel
+        public SecurityController(ApplicationDbContext db)
         {
-            ActionKey = actionKey
-        };
+            _db = db;
+        }
 
-        return View(model);
-    }
-
-    [HttpPost]
-    public IActionResult VerifyAuthenticator(TOTPVerificationViewModel model)
-    {
-        var user = GetCurrentUser();
-
-        if (string.IsNullOrEmpty(user.AuthenticatorKey))
+        [HttpGet]
+        public IActionResult SetupAuthenticator()
         {
-            ModelState.AddModelError("", "Authenticator is not set up.");
+            var user = GetCurrentUser();
+            var secret = GenerateSecretKey();
+            if (user != null && !string.IsNullOrWhiteSpace(secret))
+            {
+
+            var qrUrl = GenerateQrCodeUri(user.Username, secret);
+            TempData["SecretKey"] = secret;
+
+            return View(new SetupAuthenticatorViewModel
+            {
+                SecretKey = secret,
+                QrCodeUrl = qrUrl
+            });
+            }
+            else
+            {
+                return View();
+            }
+        }
+
+        [HttpPost]
+        public IActionResult SetupAuthenticator(SetupAuthenticatorViewModel model)
+        {
+            var user = GetCurrentUser();
+            var secret = TempData["SecretKey"]?.ToString();
+
+            var totp = new Totp(Base32Encoding.ToBytes(secret));
+            if (totp.VerifyTotp(model.Code, out _, new VerificationWindow(2, 2)))
+            {
+                user.AuthenticatorKey = secret;
+                _db.SaveChanges();
+                return RedirectToAction("SetupSuccess"); // You can create this view later
+            }
+
+            ModelState.AddModelError("", "Invalid code.");
+            model.QrCodeUrl = GenerateQrCodeUri(user.Username, secret);
+            model.SecretKey = secret;
+            TempData.Keep("SecretKey");
+
             return View(model);
         }
 
-        var totp = new Totp(Base32Encoding.ToBytes(user.AuthenticatorKey));
-        bool isValid = totp.VerifyTotp(model.AuthenticatorCode, out _, new VerificationWindow(2, 2));
-
-        if (!isValid)
+        [HttpGet]
+        public IActionResult VerifyAuthenticator(string actionKey)
         {
-            ModelState.AddModelError("", "Invalid TOTP code.");
-            return View(model);
+            return View(new TOTPVerificationViewModel { ActionKey = actionKey });
         }
 
-        // Store per-action verification
-        HttpContext.Session.SetString(model.ActionKey, DateTime.UtcNow.ToString());
+        [HttpPost]
+        public IActionResult VerifyAuthenticator(TOTPVerificationViewModel model)
+        {
+            var user = GetCurrentUser();
 
-        // Optionally redirect to a known location, or use a returnUrl if stored
-        return RedirectToAction("Index", "Home"); // or redirect based on ActionKey
-    }
+            if (string.IsNullOrEmpty(user.AuthenticatorKey))
+            {
+                ModelState.AddModelError("", "Authenticator is not set up.");
+                return View(model);
+            }
 
-    private PortalUser GetCurrentUser()
-    {
-        var username = User.Identity?.Name;
-        return _db.PortalUser.FirstOrDefault(u => u.Username == username);
+            var totp = new Totp(Base32Encoding.ToBytes(user.AuthenticatorKey));
+            var isValid = totp.VerifyTotp(model.AuthenticatorCode, out _, new VerificationWindow(2, 2));
+
+            if (!isValid)
+            {
+                ModelState.AddModelError("", "Invalid code.");
+                return View(model);
+            }
+
+            HttpContext.Session.SetString(model.ActionKey, DateTime.UtcNow.ToString());
+            return RedirectToAction("Index", "Home"); // Or redirect based on ActionKey
+        }
+
+        private PortalUser GetCurrentUser()
+        {
+            var username = User.Identity.Name;
+            return _db.PortalUser.FirstOrDefault(u => u.Username == username);
+        }
+
+        private string GenerateSecretKey() => Base32Encoding.ToString(KeyGeneration.GenerateRandomKey(20));
+
+        private string GenerateQrCodeUri(string username, string secret)
+        {
+            var appName = "SecretPOC";
+            return $"otpauth://totp/{appName}:{username}?secret={secret}&issuer={appName}";
+        }
     }
 }
